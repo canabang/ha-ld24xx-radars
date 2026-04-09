@@ -13,14 +13,13 @@ Grâce à notre paramètre dynamique, si vous réglez la "Résolution de distanc
 - etc.
 
 ## 📁 Contenu du dossier
-| Fichier | Rôle |
-|---|---|
-| `.ld2410.yaml` | Configuration ESPHome (firmware). À inclure dans le fichier principal de votre appareil ESP via `!include` |
-| `ld2410_dashboard_card.yaml` | Code YAML de la carte Dashboard (à copier/coller en mode "Éditeur de code manuel") |
-| `input_select.yaml` | Liste déroulante des ESP équipés d'un LD2410. À intégrer dans votre fichier `input_select.yaml` via `!include` (créez-le s'il n'existe pas) |
-| `CONFIG_INPUT_SELECT.md` | Documentation complémentaire sur la configuration de l'input_select |
-| `ld2410.jpg` | Capture d'écran du Dashboard |
-| `ld2410.gif` | Démonstration animée du Dashboard en action |
+| Fichier                      | Rôle                                                                                                                                        |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.ld2410.yaml`               | Configuration ESPHome (firmware). À inclure dans le fichier principal de votre appareil ESP via `!include`                                  |
+| `ld2410_dashboard_card.yaml` | Code YAML de la carte Dashboard (à copier/coller en mode "Éditeur de code manuel")                                                          |
+| `input_select.yaml`          | Liste déroulante des ESP équipés d'un LD2410. À intégrer dans votre fichier `input_select.yaml` via `!include` (créez-le s'il n'existe pas) |
+| `CONFIG_INPUT_SELECT.md`     | Documentation complémentaire sur la configuration de l'input_select                                                                         |
+| `ld2410.gif`                 | Démonstration animée du Dashboard en action                                                                                                 |
 
 ## 🏷️ Convention de Nommage (CRITIQUE)
 Le Dashboard dynamique repose entièrement sur la **construction d'entités par concaténation** du nom de l'ESP. C'est la clé de voûte de toute l'architecture.
@@ -39,8 +38,6 @@ Exemple : si votre `input_select` contient `esp_sdb`, le Dashboard génère auto
 > **⚠️ Si une seule lettre diffère**, le Dashboard affichera "Inconnu" sur toutes les entités de cet ESP.
 
 ## 📊 Le Dashboard Dynamique
-
-![Aperçu du Dashboard LD2410](ld2410.jpg)
 
 ![Démonstration en temps réel](ld2410.gif)
 
