@@ -10,7 +10,17 @@ substitutions:
   board: esp32dev
   type: arduino # ou arduino esp-idf
   loglevel: DEBUG #VERY_VERBOSE
-  static_ip: 192.168.1.16
+  static_ip: 192.168.1.XX  # <-- Remplacez par l'IP de votre ESP
+  # ==========================================
+  #   SURCHARGE PERFORMANCE (depuis .ld2450.yaml)
+  # ==========================================
+  # ---> MODE RÉGLAGE (tracé fluide sur le Dashboard)
+  # uart_throttle_ms: "250"
+  #
+  # ---> MODE PRODUCTION (valeur actuelle)
+  # uart_throttle_ms: "1500"
+  # ==========================================
+  uart_throttle_ms: "1500"
 
 packages:
   base: !include .base.yaml
@@ -24,4 +34,4 @@ packages:
 # Enable Home Assistant API
 api:
   encryption:
-    key: "/j8XX6Fh2kXZLIxyUG0E0KuawOHX5dK03tnew1F4eDs="
+    key: "VOTRE_CLE_API_ICI"  # <-- Générée par ESPHome
