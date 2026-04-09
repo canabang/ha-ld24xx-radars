@@ -1,0 +1,294 @@
+# =================================================================
+# 📡 CARTE DASHBOARD LD2410 DYNAMIQUE
+# Fichier : ld2410_dashboard_card.yaml
+# =================================================================
+
+type: vertical-stack
+cards:
+  # =================================================================
+  # 1. EN-TÊTE ET SÉLECTEUR
+  # =================================================================
+  - type: custom:config-template-card
+    entities:
+      - input_select.liste_esp_ld2410
+      - "${ states['input_select.liste_esp_ld2410'] ? 'binary_sensor.' + states['input_select.liste_esp_ld2410'].state + '_presence' : 'sun.sun' }"
+      - "${ states['input_select.liste_esp_ld2410'] ? 'binary_sensor.' + states['input_select.liste_esp_ld2410'].state + '_movement' : 'sun.sun' }"
+      - "${ states['input_select.liste_esp_ld2410'] ? 'binary_sensor.' + states['input_select.liste_esp_ld2410'].state + '_still' : 'sun.sun' }"
+      - "${ states['input_select.liste_esp_ld2410'] ? 'sensor.' + states['input_select.liste_esp_ld2410'].state + '_moving_distance_cm' : 'sun.sun' }"
+      - "${ states['input_select.liste_esp_ld2410'] ? 'sensor.' + states['input_select.liste_esp_ld2410'].state + '_still_distance_cm' : 'sun.sun' }"
+    variables:
+      esp: "states['input_select.liste_esp_ld2410'] ? states['input_select.liste_esp_ld2410'].state : 'esp_salon'"
+      res: >-
+        parseFloat(states['select.' + (states['input_select.liste_esp_ld2410'] ? states['input_select.liste_esp_ld2410'].state : 'esp_salon') + '_distance_resolution'] ? states['select.' + (states['input_select.liste_esp_ld2410'] ? states['input_select.liste_esp_ld2410'].state : 'esp_salon') + '_distance_resolution'].state : 0.75) || 0.75
+    card:
+      type: custom:stack-in-card
+      cards:
+        - type: custom:mushroom-select-card
+          entity: input_select.liste_esp_ld2410
+          name: "Capteur LD2410 Actif"
+          icon: mdi:radar
+          layout: horizontal
+        - type: grid
+          columns: 3
+          square: false
+          cards:
+            - type: custom:mushroom-entity-card
+              entity: "${ 'binary_sensor.' + esp + '_presence' }"
+              name: Présence
+              icon_color: green
+            - type: custom:mushroom-entity-card
+              entity: "${ 'binary_sensor.' + esp + '_movement' }"
+              name: Mouvement
+              icon_color: orange
+            - type: custom:mushroom-entity-card
+              entity: "${ 'binary_sensor.' + esp + '_still' }"
+              name: Statique
+              icon_color: blue
+        - type: grid
+          columns: 2
+          square: false
+          cards:
+            - type: custom:mushroom-entity-card
+              entity: "${ 'sensor.' + esp + '_moving_distance_cm' }"
+              name: Dist. Mouvement
+              icon: mdi:signal-distance-variant
+              icon_color: orange
+            - type: custom:mushroom-entity-card
+              entity: "${ 'sensor.' + esp + '_still_distance_cm' }"
+              name: Dist. Statique
+              icon: mdi:human-male
+              icon_color: blue
+  # =================================================================
+  # 2. GRAPHIQUES PLOTLY (Isolés pour empêcher le plantage de la vue)
+  # =================================================================
+  - type: custom:tabbed-card
+    tabs:
+      - attributes:
+          label: "⚡ Énergie Mouvement"
+        card:
+          type: custom:plotly-graph
+          refresh_interval: 1
+          layout:
+            height: 250
+            margin: { l: 30, r: 10, t: 10, b: 30 }
+            xaxis:
+              type: linear
+              dtick: 1
+              range: [0, 8]
+            yaxis:
+              dtick: 20
+              range: [0, 100]
+          entities:
+            - entity: ""
+              name: Seuil
+              mode: lines
+              line:
+                color: "#FB239F"
+                width: 2
+                shape: hv
+              x: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+              "y": |
+                $fn ({hass}) => {
+                  let e = hass.states['input_select.liste_esp_ld2410'];
+                  if (!e) return [0,0,0,0,0,0,0,0,0];
+                  let esp = e.state;
+                  return [0,1,2,3,4,5,6,7,8].map(i => {
+                    let s = hass.states['number.'+esp+'_g'+i+'_move_threshold'];
+                    return s ? Number(s.state) : 0;
+                  });
+                }
+            - entity: ""
+              name: Énergie
+              type: bar
+              marker:
+                color: "RGBA(255, 165, 0, 0.6)"
+              x: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+              "y": |
+                $fn ({hass}) => {
+                  let e = hass.states['input_select.liste_esp_ld2410'];
+                  if (!e) return [0,0,0,0,0,0,0,0,0];
+                  let esp = e.state;
+                  return [0,1,2,3,4,5,6,7,8].map(i => {
+                    let s = hass.states['sensor.'+esp+'_g'+i+'_move_energy'];
+                    return s ? Number(s.state) : 0;
+                  });
+                }
+
+      - attributes:
+          label: "❄️ Énergie Statique"
+        card:
+          type: custom:plotly-graph
+          refresh_interval: 1
+          layout:
+            height: 250
+            margin: { l: 30, r: 10, t: 10, b: 30 }
+            xaxis:
+              type: linear
+              dtick: 1
+              range: [0, 8]
+            yaxis:
+              dtick: 20
+              range: [0, 100]
+          entities:
+            - entity: ""
+              name: Seuil
+              mode: lines
+              line:
+                color: "#FB239F"
+                width: 2
+                shape: hv
+              x: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+              "y": |
+                $fn ({hass}) => {
+                  let e = hass.states['input_select.liste_esp_ld2410'];
+                  if (!e) return [0,0,0,0,0,0,0,0,0];
+                  let esp = e.state;
+                  return [0,1,2,3,4,5,6,7,8].map(i => {
+                    let s = hass.states['number.'+esp+'_g'+i+'_still_threshold'];
+                    return s ? Number(s.state) : 0;
+                  });
+                }
+            - entity: ""
+              name: Énergie
+              type: bar
+              marker:
+                color: "RGBA(0, 122, 255, 0.6)"
+              x: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+              "y": |
+                $fn ({hass}) => {
+                  let e = hass.states['input_select.liste_esp_ld2410'];
+                  if (!e) return [0,0,0,0,0,0,0,0,0];
+                  let esp = e.state;
+                  return [0,1,2,3,4,5,6,7,8].map(i => {
+                    let s = hass.states['sensor.'+esp+'_g'+i+'_still_energy'];
+                    return s ? Number(s.state) : 0;
+                  });
+                }
+
+  # =================================================================
+  # 3. RÉGLAGES DES SEUILS
+  # =================================================================
+  - type: custom:config-template-card
+    entities:
+      - input_select.liste_esp_ld2410
+      - "${ states['input_select.liste_esp_ld2410'] ? 'switch.' + states['input_select.liste_esp_ld2410'].state + '_engineering_mode' : 'sun.sun' }"
+      - "${ states['input_select.liste_esp_ld2410'] ? 'switch.' + states['input_select.liste_esp_ld2410'].state + '_control_bluetooth' : 'sun.sun' }"
+      - "${ states['input_select.liste_esp_ld2410'] ? 'number.' + states['input_select.liste_esp_ld2410'].state + '_timeout' : 'sun.sun' }"
+      - "${ states['input_select.liste_esp_ld2410'] ? 'select.' + states['input_select.liste_esp_ld2410'].state + '_distance_resolution' : 'sun.sun' }"
+    variables:
+      esp: "states['input_select.liste_esp_ld2410'] ? states['input_select.liste_esp_ld2410'].state : 'esp_salon'"
+      res: >-
+        parseFloat(states['select.' + (states['input_select.liste_esp_ld2410'] ? states['input_select.liste_esp_ld2410'].state : 'esp_salon') + '_distance_resolution'] ? states['select.' + (states['input_select.liste_esp_ld2410'] ? states['input_select.liste_esp_ld2410'].state : 'esp_salon') + '_distance_resolution'].state : 0.75) || 0.75
+    card:
+      type: custom:tabbed-card
+      tabs:
+        - attributes:
+            label: "Réglages MOVE"
+          card:
+            type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g0_move_threshold' }"
+                name: "${ 'G0 (' + (0*res).toFixed(2).replace('.00','') + 'm-' + (1*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g1_move_threshold' }"
+                name: "${ 'G1 (' + (1*res).toFixed(2).replace('.00','') + 'm-' + (2*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g2_move_threshold' }"
+                name: "${ 'G2 (' + (2*res).toFixed(2).replace('.00','') + 'm-' + (3*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g3_move_threshold' }"
+                name: "${ 'G3 (' + (3*res).toFixed(2).replace('.00','') + 'm-' + (4*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g4_move_threshold' }"
+                name: "${ 'G4 (' + (4*res).toFixed(2).replace('.00','') + 'm-' + (5*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g5_move_threshold' }"
+                name: "${ 'G5 (' + (5*res).toFixed(2).replace('.00','') + 'm-' + (6*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g6_move_threshold' }"
+                name: "${ 'G6 (' + (6*res).toFixed(2).replace('.00','') + 'm-' + (7*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g7_move_threshold' }"
+                name: "${ 'G7 (' + (7*res).toFixed(2).replace('.00','') + 'm-' + (8*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g8_move_threshold' }"
+                name: "${ 'G8 (' + (8*res).toFixed(2).replace('.00','') + 'm-' + (9*res).toFixed(2).replace('.00','') + 'm)' }"
+
+        - attributes:
+            label: "Réglages STILL"
+          card:
+            type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g0_still_threshold' }"
+                name: "${ 'G0 (' + (0*res).toFixed(2).replace('.00','') + 'm-' + (1*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g1_still_threshold' }"
+                name: "${ 'G1 (' + (1*res).toFixed(2).replace('.00','') + 'm-' + (2*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g2_still_threshold' }"
+                name: "${ 'G2 (' + (2*res).toFixed(2).replace('.00','') + 'm-' + (3*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g3_still_threshold' }"
+                name: "${ 'G3 (' + (3*res).toFixed(2).replace('.00','') + 'm-' + (4*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g4_still_threshold' }"
+                name: "${ 'G4 (' + (4*res).toFixed(2).replace('.00','') + 'm-' + (5*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g5_still_threshold' }"
+                name: "${ 'G5 (' + (5*res).toFixed(2).replace('.00','') + 'm-' + (6*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g6_still_threshold' }"
+                name: "${ 'G6 (' + (6*res).toFixed(2).replace('.00','') + 'm-' + (7*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g7_still_threshold' }"
+                name: "${ 'G7 (' + (7*res).toFixed(2).replace('.00','') + 'm-' + (8*res).toFixed(2).replace('.00','') + 'm)' }"
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_g8_still_threshold' }"
+                name: "${ 'G8 (' + (8*res).toFixed(2).replace('.00','') + 'm-' + (9*res).toFixed(2).replace('.00','') + 'm)' }"
+
+        - attributes:
+            label: "Système"
+          card:
+            type: vertical-stack
+            cards:
+              - type: grid
+                columns: 2
+                square: false
+                cards:
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_max_move_distance_gate' }"
+                    name: Gate Max Move
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_max_still_distance_gate' }"
+                    name: Gate Max Still
+              - type: custom:mushroom-entity-card
+                entity: "${ 'select.' + esp + '_distance_resolution' }"
+                name: Résolution (cm/Gate)
+                icon: mdi:ruler
+              - type: custom:mushroom-number-card
+                entity: "${ 'number.' + esp + '_timeout' }"
+                name: Timeout Global
+              - type: grid
+                columns: 2
+                square: false
+                cards:
+                  - type: custom:mushroom-entity-card
+                    entity: "${ 'switch.' + esp + '_engineering_mode' }"
+                    name: Mode Ingé
+                  - type: custom:mushroom-entity-card
+                    entity: "${ 'switch.' + esp + '_control_bluetooth' }"
+                    name: Bluetooth
+                  - type: custom:mushroom-entity-card
+                    entity: "${ 'button.' + esp + '_query_params' }"
+                    name: Forcer Sync
+                    icon: mdi:sync
+              - type: custom:mushroom-entity-card
+                entity: "${ 'button.' + esp + '_restart_ld' }"
+                name: Redémarrer Radar
+                icon: mdi:restart

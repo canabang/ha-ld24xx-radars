@@ -1,0 +1,24 @@
+# =================================================================
+# Fichier : input_select.yaml (ou à inclure dans vos packages HA)
+# Fonction : Sélection dynamique du Radar LD2410 pour le Dashboard
+# =================================================================
+# PRÉREQUIS D'ARCHITECTURE (Home Assistant)
+# Si vous utilisez un fichier configuration.yaml modulaire, ce code
+# doit idéalement être inclus via : input_select: !include input_select.yaml
+# =================================================================
+
+liste_esp_ld2410:
+  name: "Choisir un radar LD2410"
+  icon: mdi:radar
+  # -------------------------------------------------------------
+  # IMPORTANT : Les options ci-dessous DOIVENT correspondre EXACTEMENT
+  # au nom de l'appareil (sans 'sensor.') déclaré dans ESPHome.
+  # (ex: si l'ESP s'appelle `esp_sdb`, utilisez exactement `esp_sdb` ici)
+  # -------------------------------------------------------------
+  options:
+    - esp_multi_capteur
+    - esp_salon
+    - esp_sdb
+    - esp_chambre
+    - esp_cuisine
+  initial: esp_sdb

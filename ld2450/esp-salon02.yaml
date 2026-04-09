@@ -1,0 +1,27 @@
+substitutions:
+  name: "esp-salon02"
+  devicename: "esp-salon02"
+  friendly_name: "esp-salon02"
+  idname: "esp_salon02" # "_" est le seul caractère autoriser
+  entity_name: "Radar" # Leave empty if you want entities named "Target..." otherwise put "Room" to have an entity named "Room Target..."
+  # specify below pin numbers of your LD2450
+  tx_pin_ld2450: GPIO17
+  rx_pin_ld2450: GPIO16
+  board: esp32dev
+  type: arduino # ou arduino esp-idf
+  loglevel: DEBUG #VERY_VERBOSE
+  static_ip: 192.168.1.16
+
+packages:
+  base: !include .base.yaml
+  ld2450: !include .ld2450.yaml
+
+
+
+
+
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "/j8XX6Fh2kXZLIxyUG0E0KuawOHX5dK03tnew1F4eDs="

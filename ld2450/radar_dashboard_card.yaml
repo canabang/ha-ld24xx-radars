@@ -1,0 +1,336 @@
+# =================================================================
+# 📡 CARTE DASHBOARD LD2450 DYNAMIQUE
+# Fichier : radar_dashboard_card.yaml
+# =================================================================
+
+type: vertical-stack
+cards:
+  # =================================================================
+  # 1. SÉLECTEUR
+  # =================================================================
+  - type: custom:config-template-card
+    entities:
+      - input_select.liste_esp_ld2450
+    variables:
+      esp: "states['input_select.liste_esp_ld2450'] ? states['input_select.liste_esp_ld2450'].state : 'esp_salon02'"
+    card:
+      type: custom:mushroom-select-card
+      entity: input_select.liste_esp_ld2450
+      name: "Capteur LD2450 Actif"
+      icon: mdi:radar
+      layout: horizontal
+
+  # =================================================================
+  # 2. GRAPHIQUE PLOTLY (Indépendant pour stabilité)
+  # =================================================================
+  - type: custom:plotly-graph
+    title: "Visualisation Temps Réel"
+    refresh_interval: 1
+    hours_to_show: current_day
+    ha_theme: true
+    layout:
+      height: 400
+      margin:
+        l: 30
+        r: 30
+        t: 30
+        b: 30
+      xaxis:
+        type: number
+        range: [-4.0, 4.0]
+        dtick: 1.0
+        gridcolor: "RGBA(200,200,200,0.1)"
+        zerolinecolor: "RGBA(200,200,200,0.2)"
+        fixedrange: true
+      yaxis:
+        type: number
+        range: [8.0, 0]
+        dtick: 1.0
+        gridcolor: "RGBA(200,200,200,0.1)"
+        zerolinecolor: "RGBA(200,200,200,0.2)"
+        scaleanchor: x
+        scaleratio: 1
+        fixedrange: true
+    entities:
+      # --- Cibles ---
+      - entity: ""
+        name: Cible 1
+        mode: markers
+        marker:
+          size: 15
+          color: "#2E8B57"
+          symbol: circle
+        x: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            return [ Number(hass.states['sensor.'+esp+'_radar_target1_x']?.state?.replace(',', '.') || 0) ];
+          }
+        y: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            return [ Number(hass.states['sensor.'+esp+'_radar_target1_y']?.state?.replace(',', '.') || 0) ];
+          }
+      - entity: ""
+        name: Cible 2
+        mode: markers
+        marker:
+          size: 12
+          color: "orange"
+          symbol: circle
+        x: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            return [ Number(hass.states['sensor.'+esp+'_radar_target2_x']?.state?.replace(',', '.') || 0) ];
+          }
+        y: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            return [ Number(hass.states['sensor.'+esp+'_radar_target2_y']?.state?.replace(',', '.') || 0) ];
+          }
+      - entity: ""
+        name: Cible 3
+        mode: markers
+        marker:
+          size: 12
+          color: "blue"
+          symbol: circle
+        x: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            return [ Number(hass.states['sensor.'+esp+'_radar_target3_x']?.state?.replace(',', '.') || 0) ];
+          }
+        y: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            return [ Number(hass.states['sensor.'+esp+'_radar_target3_y']?.state?.replace(',', '.') || 0) ];
+          }
+
+      # --- Zone 1 ---
+      - entity: ""
+        name: Zone 1
+        mode: lines
+        fill: toself
+        fillcolor: "$ex hass.states['binary_sensor.' + (hass.states['input_select.liste_esp_ld2450'] ? hass.states['input_select.liste_esp_ld2450'].state : 'esp_salon02') + '_radar_zone1_presence'].state === 'on' ? 'RGBA(46,139,87,0.4)' : 'RGBA(46,139,87,0.1)'"
+        line:
+          color: "RGBA(46,139,87,0.8)"
+          width: 2
+        x: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            let zx = Number(hass.states['number.'+esp+'_radar_zone1_x']?.state?.replace(',', '.') || 0);
+            let zw = Number(hass.states['number.'+esp+'_radar_zone1_width']?.state?.replace(',', '.') || 0);
+            let zh = Number(hass.states['number.'+esp+'_radar_zone1_height']?.state?.replace(',', '.') || 0);
+            let angle = Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) * Math.PI / 180;
+            let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) - 90) * Math.PI / 180;
+            return [ zx, zx - zw * Math.cos(angle), zx - zw * Math.cos(angle) + zh * Math.cos(angle90), zx + zh * Math.cos(angle90), zx ];
+          }
+        y: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            let zy = Number(hass.states['number.'+esp+'_radar_zone1_y']?.state?.replace(',', '.') || 0);
+            let zw = Number(hass.states['number.'+esp+'_radar_zone1_width']?.state?.replace(',', '.') || 0);
+            let zh = Number(hass.states['number.'+esp+'_radar_zone1_height']?.state?.replace(',', '.') || 0);
+            let angle = Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) * Math.PI / 180;
+            let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) + 90) * Math.PI / 180;
+            return [ zy, zy + zw * Math.sin(angle), zy + zw * Math.sin(angle) + zh * Math.sin(angle90), zy + zh * Math.sin(angle90), zy ];
+          }
+
+      # --- Zone 2 ---
+      - entity: ""
+        name: Zone 2
+        mode: lines
+        fill: toself
+        fillcolor: "$ex hass.states['binary_sensor.' + (hass.states['input_select.liste_esp_ld2450'] ? hass.states['input_select.liste_esp_ld2450'].state : 'esp_salon02') + '_radar_zone2_presence'].state === 'on' ? 'RGBA(255,165,0,0.4)' : 'RGBA(255,165,0,0.1)'"
+        line:
+          color: "RGBA(255,165,0,0.8)"
+          width: 2
+        x: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            let zx = Number(hass.states['number.'+esp+'_radar_zone2_x']?.state?.replace(',', '.') || 0);
+            let zw = Number(hass.states['number.'+esp+'_radar_zone2_width']?.state?.replace(',', '.') || 0);
+            let zh = Number(hass.states['number.'+esp+'_radar_zone2_height']?.state?.replace(',', '.') || 0);
+            let angle = Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) * Math.PI / 180;
+            let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) - 90) * Math.PI / 180;
+            return [ zx, zx - zw * Math.cos(angle), zx - zw * Math.cos(angle) + zh * Math.cos(angle90), zx + zh * Math.cos(angle90), zx ];
+          }
+        y: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            let zy = Number(hass.states['number.'+esp+'_radar_zone2_y']?.state?.replace(',', '.') || 0);
+            let zw = Number(hass.states['number.'+esp+'_radar_zone2_width']?.state?.replace(',', '.') || 0);
+            let zh = Number(hass.states['number.'+esp+'_radar_zone2_height']?.state?.replace(',', '.') || 0);
+            let angle = Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) * Math.PI / 180;
+            let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) + 90) * Math.PI / 180;
+            return [ zy, zy + zw * Math.sin(angle), zy + zw * Math.sin(angle) + zh * Math.sin(angle90), zy + zh * Math.sin(angle90), zy ];
+          }
+
+      # --- Zone 3 ---
+      - entity: ""
+        name: Zone 3
+        mode: lines
+        fill: toself
+        fillcolor: "$ex hass.states['binary_sensor.' + (hass.states['input_select.liste_esp_ld2450'] ? hass.states['input_select.liste_esp_ld2450'].state : 'esp_salon02') + '_radar_zone3_presence'].state === 'on' ? 'RGBA(0,0,255,0.4)' : 'RGBA(0,0,255,0.1)'"
+        line:
+          color: "RGBA(0,0,255,0.8)"
+          width: 2
+        x: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            let zx = Number(hass.states['number.'+esp+'_radar_zone3_x']?.state?.replace(',', '.') || 0);
+            let zw = Number(hass.states['number.'+esp+'_radar_zone3_width']?.state?.replace(',', '.') || 0);
+            let zh = Number(hass.states['number.'+esp+'_radar_zone3_height']?.state?.replace(',', '.') || 0);
+            let angle = Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) * Math.PI / 180;
+            let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) - 90) * Math.PI / 180;
+            return [ zx, zx - zw * Math.cos(angle), zx - zw * Math.cos(angle) + zh * Math.cos(angle90), zx + zh * Math.cos(angle90), zx ];
+          }
+        y: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            let zy = Number(hass.states['number.'+esp+'_radar_zone3_y']?.state?.replace(',', '.') || 0);
+            let zw = Number(hass.states['number.'+esp+'_radar_zone3_width']?.state?.replace(',', '.') || 0);
+            let zh = Number(hass.states['number.'+esp+'_radar_zone3_height']?.state?.replace(',', '.') || 0);
+            let angle = Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) * Math.PI / 180;
+            let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) + 90) * Math.PI / 180;
+            return [ zy, zy + zw * Math.sin(angle), zy + zw * Math.sin(angle) + zh * Math.sin(angle90), zy + zh * Math.sin(angle90), zy ];
+          }
+
+      # --- Zone Exclusion 1 ---
+      - entity: ""
+        name: Exclusion 1
+        mode: lines
+        fill: toself
+        fillcolor: "$ex hass.states['binary_sensor.' + (hass.states['input_select.liste_esp_ld2450'] ? hass.states['input_select.liste_esp_ld2450'].state : 'esp_salon02') + '_radar_zout1_presence'].state === 'on' ? 'RGBA(255,0,0,0.4)' : 'RGBA(255,0,0,0.1)'"
+        line:
+          color: "RGBA(255,0,0,0.8)"
+          width: 2
+          dash: dash
+        x: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            let zx = Number(hass.states['number.'+esp+'_radar_zout1_x']?.state?.replace(',', '.') || 0);
+            let zw = Number(hass.states['number.'+esp+'_radar_zout1_width']?.state?.replace(',', '.') || 0);
+            let zh = Number(hass.states['number.'+esp+'_radar_zout1_height']?.state?.replace(',', '.') || 0);
+            let angle = Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) * Math.PI / 180;
+            let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) - 90) * Math.PI / 180;
+            return [ zx, zx - zw * Math.cos(angle), zx - zw * Math.cos(angle) + zh * Math.cos(angle90), zx + zh * Math.cos(angle90), zx ];
+          }
+        y: |
+          $fn ({hass}) => {
+            let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
+            let zy = Number(hass.states['number.'+esp+'_radar_zout1_y']?.state?.replace(',', '.') || 0);
+            let zw = Number(hass.states['number.'+esp+'_radar_zout1_width']?.state?.replace(',', '.') || 0);
+            let zh = Number(hass.states['number.'+esp+'_radar_zout1_height']?.state?.replace(',', '.') || 0);
+            let angle = Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) * Math.PI / 180;
+            let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) + 90) * Math.PI / 180;
+            return [ zy, zy + zw * Math.sin(angle), zy + zw * Math.sin(angle) + zh * Math.sin(angle90), zy + zh * Math.sin(angle90), zy ];
+          }
+
+  # =================================================================
+  # 3. RÉGLAGES (Subordonnés à l'Input Select)
+  # =================================================================
+  - type: custom:config-template-card
+    entities:
+      - input_select.liste_esp_ld2450
+      - "${ states['input_select.liste_esp_ld2450'] ? 'switch.' + states['input_select.liste_esp_ld2450'].state + '_radar_zout1_enable' : 'sun.sun' }"
+    variables:
+      esp: "states['input_select.liste_esp_ld2450'] ? states['input_select.liste_esp_ld2450'].state : 'esp_salon02'"
+    card:
+      type: vertical-stack
+      cards:
+        - type: custom:mushroom-number-card
+          entity: "${ 'number.' + esp + '_radar_angle' }"
+          name: Angle d'inclinaison du radar
+          icon: mdi:angle-acute
+        - type: custom:tabbed-card
+          tabs:
+            - attributes:
+                label: Zone 1
+              card:
+                type: grid
+                columns: 2
+                square: false
+                cards:
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone1_x' }"
+                    name: Limite Droite (X)
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone1_y' }"
+                    name: Distance Initiale (Y)
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone1_width' }"
+                    name: Expansion Gauche (Largeur)
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone1_height' }"
+                    name: Profondeur (Longueur)
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone1_timeout' }"
+                    name: Timeout
+            - attributes:
+                label: Zone 2
+              card:
+                type: grid
+                columns: 2
+                square: false
+                cards:
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone2_x' }"
+                    name: Limite Droite (X)
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone2_y' }"
+                    name: Distance Initiale (Y)
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone2_width' }"
+                    name: Expansion Gauche (Largeur)
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone2_height' }"
+                    name: Profondeur (Longueur)
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone2_timeout' }"
+                    name: Timeout
+            - attributes:
+                label: Zone 3
+              card:
+                type: grid
+                columns: 2
+                square: false
+                cards:
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone3_x' }"
+                    name: Limite Droite (X)
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone3_y' }"
+                    name: Distance Initiale (Y)
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone3_width' }"
+                    name: Expansion Gauche (Largeur)
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone3_height' }"
+                    name: Profondeur (Longueur)
+                  - type: custom:mushroom-number-card
+                    entity: "${ 'number.' + esp + '_radar_zone3_timeout' }"
+                    name: Timeout
+            - attributes:
+                label: Exclusion 1
+              card:
+                type: vertical-stack
+                cards:
+                  - type: custom:mushroom-entity-card
+                    entity: "${ 'switch.' + esp + '_radar_zout1_enable' }"
+                    name: Activer Exclusion
+                  - type: grid
+                    columns: 2
+                    square: false
+                    cards:
+                      - type: custom:mushroom-number-card
+                        entity: "${ 'number.' + esp + '_radar_zout1_x' }"
+                        name: Limite Droite (X)
+                      - type: custom:mushroom-number-card
+                        entity: "${ 'number.' + esp + '_radar_zout1_y' }"
+                        name: Distance Initiale (Y)
+                      - type: custom:mushroom-number-card
+                        entity: "${ 'number.' + esp + '_radar_zout1_width' }"
+                        name: Expansion Gauche (Largeur)
+                      - type: custom:mushroom-number-card
+                        entity: "${ 'number.' + esp + '_radar_zout1_height' }"
+                        name: Profondeur (Longueur)

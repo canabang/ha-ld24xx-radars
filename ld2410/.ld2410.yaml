@@ -1,0 +1,250 @@
+# =================================================================
+# 📡 PACKAGE LD2410 OPTIMISÉ (Version Antigravity)
+# Fichier : .ld2410.yaml
+# =================================================================
+
+substitutions:
+  # ==========================================
+  #   RÉGLAGES DE PERFORMANCE & RAFRAÎCHISSEMENT
+  # ==========================================
+  # ---> MODE RÉGLAGE (Recommandé pour configurer via le Dashboard Plotly)
+  # gate_throttle: 1s
+  # energy_throttle: 1s
+  #
+  # ---> MODE PRODUCTION (Valeurs actuelles - Pour ne pas saturer Home Assistant)
+  # gate_throttle: 60s
+  # energy_throttle: 15s
+  # ==========================================
+  
+  entity_name: "LD2410"
+  gate_throttle: 60s
+  energy_throttle: 15s
+  distance_delta: "10.0"
+
+esphome:
+  name: ${name}
+  friendly_name: ${name}
+
+uart:
+  id: ld2410_uart
+  tx_pin: ${uart_tx}
+  rx_pin: ${uart_rx}
+  baud_rate: 256000
+  parity: NONE
+  stop_bits: 1
+
+ld2410:
+  uart_id: ld2410_uart
+  id: ld2410_comp
+  # Note : Le paramètre global 'throttle' a été supprimé dans ESPHome 2026.x.
+  # Les filtrages sont maintenant gérés individuellement par capteur (déjà configuré plus bas).
+
+select:
+  - platform: ld2410
+    distance_resolution:
+      name: distance resolution
+    baud_rate:
+      name: baud rate
+    out_pin_level:
+      name: out pin level
+    light_function:
+      name: light function
+
+button:
+  - platform: ld2410
+    restart:
+      name: "restart ld"
+    query_params:
+      name: "query params"
+
+number:
+  - platform: ld2410
+    timeout:
+      name: timeout
+    light_threshold:
+      name: light threshold
+    max_move_distance_gate:
+      name: max move distance gate
+    max_still_distance_gate:
+      name: max still distance gate
+    g0:
+      move_threshold:
+        name: g0 move threshold
+      still_threshold:
+        name: g0 still threshold
+    g1:
+      move_threshold:
+        name: g1 move threshold
+      still_threshold:
+        name: g1 still threshold
+    g2:
+      move_threshold:
+        name: g2 move threshold
+      still_threshold:
+        name: g2 still threshold
+    g3:
+      move_threshold:
+        name: g3 move threshold
+      still_threshold:
+        name: g3 still threshold
+    g4:
+      move_threshold:
+        name: g4 move threshold
+      still_threshold:
+        name: g4 still threshold
+    g5:
+      move_threshold:
+        name: g5 move threshold
+      still_threshold:
+        name: g5 still threshold
+    g6:
+      move_threshold:
+        name: g6 move threshold
+      still_threshold:
+        name: g6 still threshold
+    g7:
+      move_threshold:
+        name: g7 move threshold
+      still_threshold:
+        name: g7 still threshold
+    g8:
+      move_threshold:
+        name: g8 move threshold
+      still_threshold:
+        name: g8 still threshold
+        
+text_sensor:
+  - platform: ld2410
+    version:
+      name: "presence sensor version"
+    mac_address:
+      name: "presence sensor mac address"
+
+switch:
+  - platform: ld2410
+    engineering_mode:
+      name: "engineering mode"
+    bluetooth:
+      name: control Bluetooth
+    
+binary_sensor:
+  - platform: ld2410
+    has_target:
+      name: "presence"
+    has_moving_target:
+      name: "movement"
+    has_still_target:
+      name: "still"
+    out_pin_presence_status:
+      name: out pin presence status
+  - platform: gpio
+    pin: ${gpiopin}
+    name: gpio out pin presence
+    device_class: presence
+
+sensor:
+  - platform: ld2410
+    light:
+      name: light
+    moving_distance:
+      name: "Moving distance (cm)"
+      filters:
+        - delta: ${distance_delta} # Seuil pour éviter le spam de petits mouvements
+    still_distance:
+      name: "Still Distance (cm)"
+      filters:
+        - delta: ${distance_delta}
+    moving_energy:
+      name: "Move Energy (%)"
+      filters:
+        - throttle: ${energy_throttle} # Statistiques uniquement, pas besoin de temps réel
+    still_energy:
+      name: "Still Energy (%)"
+      filters:
+        - throttle: ${energy_throttle}
+    detection_distance:
+      name: "Distance Detection (cm)"
+      filters:
+        - delta: ${distance_delta}
+    # On bride massivement les "Gates" (portes de détection) qui sont les plus bavardes
+    g0: 
+      move_energy:
+        name: g0 move energy
+        filters:
+          - throttle: ${gate_throttle}
+      still_energy:
+        name: g0 still energy
+        filters:
+          - throttle: ${gate_throttle}
+    g1: 
+      move_energy:
+        name: g1 move energy
+        filters:
+          - throttle: ${gate_throttle}
+      still_energy:
+        name: g1 still energy
+        filters:
+          - throttle: ${gate_throttle}
+    g2: 
+      move_energy:
+        name: g2 move energy
+        filters:
+          - throttle: ${gate_throttle}
+      still_energy:
+        name: g2 still energy
+        filters:
+          - throttle: ${gate_throttle}
+    g3: 
+      move_energy:
+        name: g3 move energy
+        filters:
+          - throttle: ${gate_throttle}
+      still_energy:
+        name: g3 still energy
+        filters:
+          - throttle: ${gate_throttle}
+    g4: 
+      move_energy:
+        name: g4 move energy
+        filters:
+          - throttle: ${gate_throttle}
+      still_energy:
+        name: g4 still energy
+        filters:
+          - throttle: ${gate_throttle}
+    g5: 
+      move_energy:
+        name: g5 move energy
+        filters:
+          - throttle: ${gate_throttle}
+      still_energy:
+        name: g5 still energy
+        filters:
+          - throttle: ${gate_throttle}
+    g6: 
+      move_energy:
+        name: g6 move energy
+        filters:
+          - throttle: ${gate_throttle}
+      still_energy:
+        name: g6 still energy
+        filters:
+          - throttle: ${gate_throttle}
+    g7: 
+      move_energy:
+        name: g7 move energy
+        filters:
+          - throttle: ${gate_throttle}
+      still_energy:
+        name: g7 still energy
+        filters:
+          - throttle: ${gate_throttle}
+    g8: 
+      move_energy:
+        name: g8 move energy
+        filters:
+          - throttle: ${gate_throttle}
+      still_energy:
+        name: g8 still energy
+        filters:
+          - throttle: ${gate_throttle}
