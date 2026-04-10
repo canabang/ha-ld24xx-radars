@@ -1,30 +1,86 @@
-# =================================================================
-# 📡 CARTE DASHBOARD LD2450 DYNAMIQUE
-# Fichier : radar_dashboard_card.yaml
-# =================================================================
-
 type: vertical-stack
 cards:
-  # =================================================================
-  # 1. SÉLECTEUR
-  # =================================================================
   - type: custom:config-template-card
     entities:
       - input_select.liste_esp_ld2450
+      - >-
+        ${ states['input_select.liste_esp_ld2450'] ? 'binary_sensor.' +
+        states['input_select.liste_esp_ld2450'].state + '_radar_any_presence' :
+        'sun.sun' }
+      - >-
+        ${ states['input_select.liste_esp_ld2450'] ? 'binary_sensor.' +
+        states['input_select.liste_esp_ld2450'].state + '_radar_zone1_presence' :
+        'sun.sun' }
+      - >-
+        ${ states['input_select.liste_esp_ld2450'] ? 'binary_sensor.' +
+        states['input_select.liste_esp_ld2450'].state + '_radar_zone2_presence' :
+        'sun.sun' }
+      - >-
+        ${ states['input_select.liste_esp_ld2450'] ? 'binary_sensor.' +
+        states['input_select.liste_esp_ld2450'].state + '_radar_zone3_presence' :
+        'sun.sun' }
+      - >-
+        ${ states['input_select.liste_esp_ld2450'] ? 'binary_sensor.' +
+        states['input_select.liste_esp_ld2450'].state + '_radar_zout1_presence' :
+        'sun.sun' }
     variables:
-      esp: "states['input_select.liste_esp_ld2450'] ? states['input_select.liste_esp_ld2450'].state : 'esp_salon02'"
+      esp: >-
+        states['input_select.liste_esp_ld2450'] ?
+        states['input_select.liste_esp_ld2450'].state : 'esp_salon02'
     card:
-      type: custom:mushroom-select-card
-      entity: input_select.liste_esp_ld2450
-      name: "Capteur LD2450 Actif"
-      icon: mdi:radar
-      layout: horizontal
-
-  # =================================================================
-  # 2. GRAPHIQUE PLOTLY (Indépendant pour stabilité)
-  # =================================================================
+      type: vertical-stack
+      cards:
+        - type: custom:mushroom-select-card
+          entity: input_select.liste_esp_ld2450
+          name: Capteur LD2450 Actif
+          icon: mdi:radar
+          layout: horizontal
+        - type: custom:mushroom-entity-card
+          entity: ${ 'binary_sensor.' + esp + '_radar_any_presence' }
+          name: Détection Globale (Toutes zones)
+          icon: mdi:home-account
+          icon_color: >-
+            ${ states['binary_sensor.' + esp + '_radar_any_presence'].state ===
+            'on' ? '#2E8B57' : 'disabled' }
+          layout: horizontal
+        - type: grid
+          columns: 2
+          square: false
+          cards:
+            - type: custom:mushroom-entity-card
+              entity: ${ 'binary_sensor.' + esp + '_radar_zone1_presence' }
+              name: Zone 1
+              icon: mdi:square-outline
+              icon_color: >-
+                ${ states['binary_sensor.' + esp +
+                '_radar_zone1_presence']?.state === 'on' ? '#2E8B57' :
+                'disabled' }
+            - type: custom:mushroom-entity-card
+              entity: ${ 'binary_sensor.' + esp + '_radar_zone2_presence' }
+              name: Zone 2
+              icon: mdi:square-outline
+              icon_color: >-
+                ${ states['binary_sensor.' + esp +
+                '_radar_zone2_presence']?.state === 'on' ? '#2E8B57' :
+                'disabled' }
+            - type: custom:mushroom-entity-card
+              entity: ${ 'binary_sensor.' + esp + '_radar_zone3_presence' }
+              name: Zone 3
+              icon: mdi:square-outline
+              icon_color: >-
+                ${ states['binary_sensor.' + esp +
+                '_radar_zone3_presence']?.state === 'on' ? '#2E8B57' :
+                'disabled' }
+            - type: custom:mushroom-entity-card
+              entity: ${ 'binary_sensor.' + esp + '_radar_zout1_presence' }
+              name: Exclusion
+              icon: mdi:shield-off-outline
+              icon_color: >-
+                ${ states['binary_sensor.' + esp +
+                '_radar_zout1_presence']?.state === 'on' ? '#2E8B57' :
+                'disabled' }
   - type: custom:plotly-graph
-    title: "Visualisation Temps Réel"
+    title: Visualisation Temps Réel
     refresh_interval: 1
     hours_to_show: current_day
     ha_theme: true
@@ -37,22 +93,25 @@ cards:
         b: 30
       xaxis:
         type: number
-        range: [-4.0, 4.0]
-        dtick: 1.0
-        gridcolor: "RGBA(200,200,200,0.1)"
-        zerolinecolor: "RGBA(200,200,200,0.2)"
+        range:
+          - -4
+          - 4
+        dtick: 1
+        gridcolor: RGBA(200,200,200,0.1)
+        zerolinecolor: RGBA(200,200,200,0.2)
         fixedrange: true
       yaxis:
         type: number
-        range: [8.0, 0]
-        dtick: 1.0
-        gridcolor: "RGBA(200,200,200,0.1)"
-        zerolinecolor: "RGBA(200,200,200,0.2)"
+        range:
+          - 8
+          - 0
+        dtick: 1
+        gridcolor: RGBA(200,200,200,0.1)
+        zerolinecolor: RGBA(200,200,200,0.2)
         scaleanchor: x
         scaleratio: 1
         fixedrange: true
     entities:
-      # --- Cibles ---
       - entity: ""
         name: Cible 1
         mode: markers
@@ -65,7 +124,7 @@ cards:
             let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
             return [ Number(hass.states['sensor.'+esp+'_radar_target1_x']?.state?.replace(',', '.') || 0) ];
           }
-        y: |
+        "y": |
           $fn ({hass}) => {
             let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
             return [ Number(hass.states['sensor.'+esp+'_radar_target1_y']?.state?.replace(',', '.') || 0) ];
@@ -75,14 +134,14 @@ cards:
         mode: markers
         marker:
           size: 12
-          color: "orange"
+          color: orange
           symbol: circle
         x: |
           $fn ({hass}) => {
             let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
             return [ Number(hass.states['sensor.'+esp+'_radar_target2_x']?.state?.replace(',', '.') || 0) ];
           }
-        y: |
+        "y": |
           $fn ({hass}) => {
             let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
             return [ Number(hass.states['sensor.'+esp+'_radar_target2_y']?.state?.replace(',', '.') || 0) ];
@@ -92,27 +151,30 @@ cards:
         mode: markers
         marker:
           size: 12
-          color: "blue"
+          color: blue
           symbol: circle
         x: |
           $fn ({hass}) => {
             let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
             return [ Number(hass.states['sensor.'+esp+'_radar_target3_x']?.state?.replace(',', '.') || 0) ];
           }
-        y: |
+        "y": |
           $fn ({hass}) => {
             let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
             return [ Number(hass.states['sensor.'+esp+'_radar_target3_y']?.state?.replace(',', '.') || 0) ];
           }
-
-      # --- Zone 1 ---
       - entity: ""
         name: Zone 1
         mode: lines
         fill: toself
-        fillcolor: "$ex hass.states['binary_sensor.' + (hass.states['input_select.liste_esp_ld2450'] ? hass.states['input_select.liste_esp_ld2450'].state : 'esp_salon02') + '_radar_zone1_presence'].state === 'on' ? 'RGBA(46,139,87,0.4)' : 'RGBA(46,139,87,0.1)'"
+        fillcolor: >-
+          $ex hass.states['binary_sensor.' +
+          (hass.states['input_select.liste_esp_ld2450'] ?
+          hass.states['input_select.liste_esp_ld2450'].state : 'esp_salon02') +
+          '_radar_zone1_presence'].state === 'on' ? 'RGBA(46,139,87,0.4)' :
+          'RGBA(46,139,87,0.1)'
         line:
-          color: "RGBA(46,139,87,0.8)"
+          color: RGBA(46,139,87,0.8)
           width: 2
         x: |
           $fn ({hass}) => {
@@ -124,7 +186,7 @@ cards:
             let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) - 90) * Math.PI / 180;
             return [ zx, zx - zw * Math.cos(angle), zx - zw * Math.cos(angle) + zh * Math.cos(angle90), zx + zh * Math.cos(angle90), zx ];
           }
-        y: |
+        "y": |
           $fn ({hass}) => {
             let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
             let zy = Number(hass.states['number.'+esp+'_radar_zone1_y']?.state?.replace(',', '.') || 0);
@@ -134,15 +196,18 @@ cards:
             let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) + 90) * Math.PI / 180;
             return [ zy, zy + zw * Math.sin(angle), zy + zw * Math.sin(angle) + zh * Math.sin(angle90), zy + zh * Math.sin(angle90), zy ];
           }
-
-      # --- Zone 2 ---
       - entity: ""
         name: Zone 2
         mode: lines
         fill: toself
-        fillcolor: "$ex hass.states['binary_sensor.' + (hass.states['input_select.liste_esp_ld2450'] ? hass.states['input_select.liste_esp_ld2450'].state : 'esp_salon02') + '_radar_zone2_presence'].state === 'on' ? 'RGBA(255,165,0,0.4)' : 'RGBA(255,165,0,0.1)'"
+        fillcolor: >-
+          $ex hass.states['binary_sensor.' +
+          (hass.states['input_select.liste_esp_ld2450'] ?
+          hass.states['input_select.liste_esp_ld2450'].state : 'esp_salon02') +
+          '_radar_zone2_presence'].state === 'on' ? 'RGBA(255,165,0,0.4)' :
+          'RGBA(255,165,0,0.1)'
         line:
-          color: "RGBA(255,165,0,0.8)"
+          color: RGBA(255,165,0,0.8)
           width: 2
         x: |
           $fn ({hass}) => {
@@ -154,7 +219,7 @@ cards:
             let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) - 90) * Math.PI / 180;
             return [ zx, zx - zw * Math.cos(angle), zx - zw * Math.cos(angle) + zh * Math.cos(angle90), zx + zh * Math.cos(angle90), zx ];
           }
-        y: |
+        "y": |
           $fn ({hass}) => {
             let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
             let zy = Number(hass.states['number.'+esp+'_radar_zone2_y']?.state?.replace(',', '.') || 0);
@@ -164,15 +229,18 @@ cards:
             let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) + 90) * Math.PI / 180;
             return [ zy, zy + zw * Math.sin(angle), zy + zw * Math.sin(angle) + zh * Math.sin(angle90), zy + zh * Math.sin(angle90), zy ];
           }
-
-      # --- Zone 3 ---
       - entity: ""
         name: Zone 3
         mode: lines
         fill: toself
-        fillcolor: "$ex hass.states['binary_sensor.' + (hass.states['input_select.liste_esp_ld2450'] ? hass.states['input_select.liste_esp_ld2450'].state : 'esp_salon02') + '_radar_zone3_presence'].state === 'on' ? 'RGBA(0,0,255,0.4)' : 'RGBA(0,0,255,0.1)'"
+        fillcolor: >-
+          $ex hass.states['binary_sensor.' +
+          (hass.states['input_select.liste_esp_ld2450'] ?
+          hass.states['input_select.liste_esp_ld2450'].state : 'esp_salon02') +
+          '_radar_zone3_presence'].state === 'on' ? 'RGBA(0,0,255,0.4)' :
+          'RGBA(0,0,255,0.1)'
         line:
-          color: "RGBA(0,0,255,0.8)"
+          color: RGBA(0,0,255,0.8)
           width: 2
         x: |
           $fn ({hass}) => {
@@ -184,7 +252,7 @@ cards:
             let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) - 90) * Math.PI / 180;
             return [ zx, zx - zw * Math.cos(angle), zx - zw * Math.cos(angle) + zh * Math.cos(angle90), zx + zh * Math.cos(angle90), zx ];
           }
-        y: |
+        "y": |
           $fn ({hass}) => {
             let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
             let zy = Number(hass.states['number.'+esp+'_radar_zone3_y']?.state?.replace(',', '.') || 0);
@@ -194,15 +262,18 @@ cards:
             let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) + 90) * Math.PI / 180;
             return [ zy, zy + zw * Math.sin(angle), zy + zw * Math.sin(angle) + zh * Math.sin(angle90), zy + zh * Math.sin(angle90), zy ];
           }
-
-      # --- Zone Exclusion 1 ---
       - entity: ""
         name: Exclusion 1
         mode: lines
         fill: toself
-        fillcolor: "$ex hass.states['binary_sensor.' + (hass.states['input_select.liste_esp_ld2450'] ? hass.states['input_select.liste_esp_ld2450'].state : 'esp_salon02') + '_radar_zout1_presence'].state === 'on' ? 'RGBA(255,0,0,0.4)' : 'RGBA(255,0,0,0.1)'"
+        fillcolor: >-
+          $ex hass.states['binary_sensor.' +
+          (hass.states['input_select.liste_esp_ld2450'] ?
+          hass.states['input_select.liste_esp_ld2450'].state : 'esp_salon02') +
+          '_radar_zout1_presence'].state === 'on' ? 'RGBA(255,0,0,0.4)' :
+          'RGBA(255,0,0,0.1)'
         line:
-          color: "RGBA(255,0,0,0.8)"
+          color: RGBA(255,0,0,0.8)
           width: 2
           dash: dash
         x: |
@@ -215,7 +286,7 @@ cards:
             let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) - 90) * Math.PI / 180;
             return [ zx, zx - zw * Math.cos(angle), zx - zw * Math.cos(angle) + zh * Math.cos(angle90), zx + zh * Math.cos(angle90), zx ];
           }
-        y: |
+        "y": |
           $fn ({hass}) => {
             let esp = hass.states['input_select.liste_esp_ld2450']?.state || 'esp_salon02';
             let zy = Number(hass.states['number.'+esp+'_radar_zout1_y']?.state?.replace(',', '.') || 0);
@@ -225,21 +296,34 @@ cards:
             let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) + 90) * Math.PI / 180;
             return [ zy, zy + zw * Math.sin(angle), zy + zw * Math.sin(angle) + zh * Math.sin(angle90), zy + zh * Math.sin(angle90), zy ];
           }
-
-  # =================================================================
-  # 3. RÉGLAGES (Subordonnés à l'Input Select)
-  # =================================================================
   - type: custom:config-template-card
     entities:
       - input_select.liste_esp_ld2450
-      - "${ states['input_select.liste_esp_ld2450'] ? 'switch.' + states['input_select.liste_esp_ld2450'].state + '_radar_zout1_enable' : 'sun.sun' }"
+      - >-
+        ${ states['input_select.liste_esp_ld2450'] ? 'switch.' +
+        states['input_select.liste_esp_ld2450'].state + '_radar_zout1_enable' :
+        'sun.sun' }
+      - >-
+        ${ states['input_select.liste_esp_ld2450'] ? 'switch.' +
+        states['input_select.liste_esp_ld2450'].state +
+        '_radar_target_must_leave_zone1' : 'sun.sun' }
+      - >-
+        ${ states['input_select.liste_esp_ld2450'] ? 'switch.' +
+        states['input_select.liste_esp_ld2450'].state +
+        '_radar_target_must_leave_zone2' : 'sun.sun' }
+      - >-
+        ${ states['input_select.liste_esp_ld2450'] ? 'switch.' +
+        states['input_select.liste_esp_ld2450'].state +
+        '_radar_target_must_leave_zone3' : 'sun.sun' }
     variables:
-      esp: "states['input_select.liste_esp_ld2450'] ? states['input_select.liste_esp_ld2450'].state : 'esp_salon02'"
+      esp: >-
+        states['input_select.liste_esp_ld2450'] ?
+        states['input_select.liste_esp_ld2450'].state : 'esp_salon02'
     card:
       type: vertical-stack
       cards:
         - type: custom:mushroom-number-card
-          entity: "${ 'number.' + esp + '_radar_angle' }"
+          entity: ${ 'number.' + esp + '_radar_angle' }
           name: Angle d'inclinaison du radar
           icon: mdi:angle-acute
         - type: custom:tabbed-card
@@ -252,20 +336,30 @@ cards:
                 square: false
                 cards:
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone1_x' }"
+                    entity: ${ 'number.' + esp + '_radar_zone1_x' }
                     name: Limite Droite (X)
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone1_y' }"
+                    entity: ${ 'number.' + esp + '_radar_zone1_y' }
                     name: Distance Initiale (Y)
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone1_width' }"
+                    entity: ${ 'number.' + esp + '_radar_zone1_width' }
                     name: Expansion Gauche (Largeur)
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone1_height' }"
+                    entity: ${ 'number.' + esp + '_radar_zone1_height' }
                     name: Profondeur (Longueur)
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone1_timeout' }"
+                    entity: ${ 'number.' + esp + '_radar_zone1_timeout' }
                     name: Timeout
+                  - type: custom:mushroom-entity-card
+                    entity: ${ 'switch.' + esp + '_radar_target_must_leave_zone1' }
+                    name: Rester Actif (Sortie)
+                    icon: mdi:account-cancel
+                    icon_color: >-
+                      ${ states['switch.' + esp +
+                      '_radar_target_must_leave_zone1']?.state === 'on' ?
+                      '#2E8B57' : 'disabled' }
+                    tap_action:
+                      action: toggle
             - attributes:
                 label: Zone 2
               card:
@@ -274,20 +368,30 @@ cards:
                 square: false
                 cards:
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone2_x' }"
+                    entity: ${ 'number.' + esp + '_radar_zone2_x' }
                     name: Limite Droite (X)
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone2_y' }"
+                    entity: ${ 'number.' + esp + '_radar_zone2_y' }
                     name: Distance Initiale (Y)
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone2_width' }"
+                    entity: ${ 'number.' + esp + '_radar_zone2_width' }
                     name: Expansion Gauche (Largeur)
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone2_height' }"
+                    entity: ${ 'number.' + esp + '_radar_zone2_height' }
                     name: Profondeur (Longueur)
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone2_timeout' }"
+                    entity: ${ 'number.' + esp + '_radar_zone2_timeout' }
                     name: Timeout
+                  - type: custom:mushroom-entity-card
+                    entity: ${ 'switch.' + esp + '_radar_target_must_leave_zone2' }
+                    name: Rester Actif (Sortie)
+                    icon: mdi:account-cancel
+                    icon_color: >-
+                      ${ states['switch.' + esp +
+                      '_radar_target_must_leave_zone2']?.state === 'on' ?
+                      '#2E8B57' : 'disabled' }
+                    tap_action:
+                      action: toggle
             - attributes:
                 label: Zone 3
               card:
@@ -296,41 +400,56 @@ cards:
                 square: false
                 cards:
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone3_x' }"
+                    entity: ${ 'number.' + esp + '_radar_zone3_x' }
                     name: Limite Droite (X)
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone3_y' }"
+                    entity: ${ 'number.' + esp + '_radar_zone3_y' }
                     name: Distance Initiale (Y)
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone3_width' }"
+                    entity: ${ 'number.' + esp + '_radar_zone3_width' }
                     name: Expansion Gauche (Largeur)
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone3_height' }"
+                    entity: ${ 'number.' + esp + '_radar_zone3_height' }
                     name: Profondeur (Longueur)
                   - type: custom:mushroom-number-card
-                    entity: "${ 'number.' + esp + '_radar_zone3_timeout' }"
+                    entity: ${ 'number.' + esp + '_radar_zone3_timeout' }
                     name: Timeout
+                  - type: custom:mushroom-entity-card
+                    entity: ${ 'switch.' + esp + '_radar_target_must_leave_zone3' }
+                    name: Rester Actif (Sortie)
+                    icon: mdi:account-cancel
+                    icon_color: >-
+                      ${ states['switch.' + esp +
+                      '_radar_target_must_leave_zone3']?.state === 'on' ?
+                      '#2E8B57' : 'disabled' }
+                    tap_action:
+                      action: toggle
             - attributes:
                 label: Exclusion 1
               card:
                 type: vertical-stack
                 cards:
                   - type: custom:mushroom-entity-card
-                    entity: "${ 'switch.' + esp + '_radar_zout1_enable' }"
+                    entity: ${ 'switch.' + esp + '_radar_zout1_enable' }
                     name: Activer Exclusion
+                    icon_color: >-
+                      ${ states['switch.' + esp + '_radar_zout1_enable']?.state
+                      === 'on' ? '#2E8B57' : 'disabled' }
+                    tap_action:
+                      action: toggle
                   - type: grid
                     columns: 2
                     square: false
                     cards:
                       - type: custom:mushroom-number-card
-                        entity: "${ 'number.' + esp + '_radar_zout1_x' }"
+                        entity: ${ 'number.' + esp + '_radar_zout1_x' }
                         name: Limite Droite (X)
                       - type: custom:mushroom-number-card
-                        entity: "${ 'number.' + esp + '_radar_zout1_y' }"
+                        entity: ${ 'number.' + esp + '_radar_zout1_y' }
                         name: Distance Initiale (Y)
                       - type: custom:mushroom-number-card
-                        entity: "${ 'number.' + esp + '_radar_zout1_width' }"
+                        entity: ${ 'number.' + esp + '_radar_zout1_width' }
                         name: Expansion Gauche (Largeur)
                       - type: custom:mushroom-number-card
-                        entity: "${ 'number.' + esp + '_radar_zout1_height' }"
+                        entity: ${ 'number.' + esp + '_radar_zout1_height' }
                         name: Profondeur (Longueur)
