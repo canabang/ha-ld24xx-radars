@@ -296,40 +296,44 @@ cards:
             let angle90 = (Number(hass.states['number.'+esp+'_radar_angle']?.state?.replace(',', '.') || 0) + 90) * Math.PI / 180;
             return [ zy, zy + zw * Math.sin(angle), zy + zw * Math.sin(angle) + zh * Math.sin(angle90), zy + zh * Math.sin(angle90), zy ];
           }
-  - type: custom:config-template-card
-    entities:
-      - input_select.liste_esp_ld2450
-      - >-
-        ${ states['input_select.liste_esp_ld2450'] ? 'switch.' +
-        states['input_select.liste_esp_ld2450'].state + '_radar_zout1_enable' :
-        'sun.sun' }
-      - >-
-        ${ states['input_select.liste_esp_ld2450'] ? 'switch.' +
-        states['input_select.liste_esp_ld2450'].state +
-        '_radar_target_must_leave_zone1' : 'sun.sun' }
-      - >-
-        ${ states['input_select.liste_esp_ld2450'] ? 'switch.' +
-        states['input_select.liste_esp_ld2450'].state +
-        '_radar_target_must_leave_zone2' : 'sun.sun' }
-      - >-
-        ${ states['input_select.liste_esp_ld2450'] ? 'switch.' +
-        states['input_select.liste_esp_ld2450'].state +
-        '_radar_target_must_leave_zone3' : 'sun.sun' }
-    variables:
-      esp: >-
-        states['input_select.liste_esp_ld2450'] ?
-        states['input_select.liste_esp_ld2450'].state : 'esp_salon02'
-    card:
-      type: vertical-stack
-      cards:
-        - type: custom:mushroom-number-card
+  - type: vertical-stack
+    cards:
+      - type: custom:config-template-card
+        entities:
+          - input_select.liste_esp_ld2450
+          - >-
+            ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_angle' : 'sun.sun' }
+        variables:
+          esp: >-
+            states['input_select.liste_esp_ld2450'] ? states['input_select.liste_esp_ld2450'].state : 'esp_salon02'
+        card:
+          type: custom:mushroom-number-card
           entity: ${ 'number.' + esp + '_radar_angle' }
           name: Angle d'inclinaison du radar
           icon: mdi:angle-acute
-        - type: custom:tabbed-card
-          tabs:
-            - attributes:
-                label: Zone 1
+      - type: custom:tabbed-card
+        tabs:
+          - attributes:
+              label: Zone 1
+            card:
+              type: custom:config-template-card
+              entities:
+                - input_select.liste_esp_ld2450
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone1_x' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone1_y' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone1_width' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone1_height' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone1_timeout' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'switch.' + states['input_select.liste_esp_ld2450'].state + '_radar_target_must_leave_zone1' : 'sun.sun' }
+              variables:
+                esp: >-
+                  states['input_select.liste_esp_ld2450'] ? states['input_select.liste_esp_ld2450'].state : 'esp_salon02'
               card:
                 type: grid
                 columns: 2
@@ -350,18 +354,36 @@ cards:
                   - type: custom:mushroom-number-card
                     entity: ${ 'number.' + esp + '_radar_zone1_timeout' }
                     name: Timeout
+                    display_mode: buttons
                   - type: custom:mushroom-entity-card
                     entity: ${ 'switch.' + esp + '_radar_target_must_leave_zone1' }
                     name: Rester Actif (Sortie)
                     icon: mdi:account-cancel
                     icon_color: >-
-                      ${ states['switch.' + esp +
-                      '_radar_target_must_leave_zone1']?.state === 'on' ?
-                      '#2E8B57' : 'disabled' }
+                      ${ states['switch.' + esp + '_radar_target_must_leave_zone1']?.state === 'on' ? '#2E8B57' : 'disabled' }
                     tap_action:
                       action: toggle
-            - attributes:
-                label: Zone 2
+          - attributes:
+              label: Zone 2
+            card:
+              type: custom:config-template-card
+              entities:
+                - input_select.liste_esp_ld2450
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone2_x' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone2_y' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone2_width' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone2_height' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone2_timeout' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'switch.' + states['input_select.liste_esp_ld2450'].state + '_radar_target_must_leave_zone2' : 'sun.sun' }
+              variables:
+                esp: >-
+                  states['input_select.liste_esp_ld2450'] ? states['input_select.liste_esp_ld2450'].state : 'esp_salon02'
               card:
                 type: grid
                 columns: 2
@@ -382,18 +404,36 @@ cards:
                   - type: custom:mushroom-number-card
                     entity: ${ 'number.' + esp + '_radar_zone2_timeout' }
                     name: Timeout
+                    display_mode: buttons
                   - type: custom:mushroom-entity-card
                     entity: ${ 'switch.' + esp + '_radar_target_must_leave_zone2' }
                     name: Rester Actif (Sortie)
                     icon: mdi:account-cancel
                     icon_color: >-
-                      ${ states['switch.' + esp +
-                      '_radar_target_must_leave_zone2']?.state === 'on' ?
-                      '#2E8B57' : 'disabled' }
+                      ${ states['switch.' + esp + '_radar_target_must_leave_zone2']?.state === 'on' ? '#2E8B57' : 'disabled' }
                     tap_action:
                       action: toggle
-            - attributes:
-                label: Zone 3
+          - attributes:
+              label: Zone 3
+            card:
+              type: custom:config-template-card
+              entities:
+                - input_select.liste_esp_ld2450
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone3_x' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone3_y' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone3_width' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone3_height' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zone3_timeout' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'switch.' + states['input_select.liste_esp_ld2450'].state + '_radar_target_must_leave_zone3' : 'sun.sun' }
+              variables:
+                esp: >-
+                  states['input_select.liste_esp_ld2450'] ? states['input_select.liste_esp_ld2450'].state : 'esp_salon02'
               card:
                 type: grid
                 columns: 2
@@ -414,18 +454,36 @@ cards:
                   - type: custom:mushroom-number-card
                     entity: ${ 'number.' + esp + '_radar_zone3_timeout' }
                     name: Timeout
+                    display_mode: buttons
                   - type: custom:mushroom-entity-card
                     entity: ${ 'switch.' + esp + '_radar_target_must_leave_zone3' }
                     name: Rester Actif (Sortie)
                     icon: mdi:account-cancel
                     icon_color: >-
-                      ${ states['switch.' + esp +
-                      '_radar_target_must_leave_zone3']?.state === 'on' ?
-                      '#2E8B57' : 'disabled' }
+                      ${ states['switch.' + esp + '_radar_target_must_leave_zone3']?.state === 'on' ? '#2E8B57' : 'disabled' }
                     tap_action:
                       action: toggle
-            - attributes:
-                label: Exclusion 1
+          - attributes:
+              label: Exclusion 1
+            card:
+              type: custom:config-template-card
+              entities:
+                - input_select.liste_esp_ld2450
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'switch.' + states['input_select.liste_esp_ld2450'].state + '_radar_zout1_enable' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zout1_x' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zout1_y' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zout1_width' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zout1_height' : 'sun.sun' }
+                - >-
+                  ${ states['input_select.liste_esp_ld2450'] ? 'number.' + states['input_select.liste_esp_ld2450'].state + '_radar_zout1_timeout' : 'sun.sun' }
+              variables:
+                esp: >-
+                  states['input_select.liste_esp_ld2450'] ? states['input_select.liste_esp_ld2450'].state : 'esp_salon02'
               card:
                 type: vertical-stack
                 cards:
@@ -433,8 +491,7 @@ cards:
                     entity: ${ 'switch.' + esp + '_radar_zout1_enable' }
                     name: Activer Exclusion
                     icon_color: >-
-                      ${ states['switch.' + esp + '_radar_zout1_enable']?.state
-                      === 'on' ? '#2E8B57' : 'disabled' }
+                      ${ states['switch.' + esp + '_radar_zout1_enable']?.state === 'on' ? '#2E8B57' : 'disabled' }
                     tap_action:
                       action: toggle
                   - type: grid
@@ -453,3 +510,7 @@ cards:
                       - type: custom:mushroom-number-card
                         entity: ${ 'number.' + esp + '_radar_zout1_height' }
                         name: Profondeur (Longueur)
+                      - type: custom:mushroom-number-card
+                        entity: ${ 'number.' + esp + '_radar_zout1_timeout' }
+                        name: Timeout
+                        display_mode: buttons

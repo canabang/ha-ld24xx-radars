@@ -15,7 +15,7 @@ substitutions:
   # gate_throttle: 60s
   # energy_throttle: 15s
   # ==========================================
-  
+
   entity_name: "LD2410"
   gate_throttle: 60s
   energy_throttle: 15s
@@ -112,7 +112,7 @@ number:
         name: g8 move threshold
       still_threshold:
         name: g8 still threshold
-        
+
 text_sensor:
   - platform: ld2410
     version:
@@ -126,7 +126,7 @@ switch:
       name: "engineering mode"
     bluetooth:
       name: control Bluetooth
-    
+
 binary_sensor:
   - platform: ld2410
     has_target:
@@ -167,7 +167,7 @@ sensor:
       filters:
         - delta: ${distance_delta}
     # On bride massivement les "Gates" (portes de détection) qui sont les plus bavardes
-    g0: 
+    g0:
       move_energy:
         name: g0 move energy
         filters:
@@ -176,7 +176,7 @@ sensor:
         name: g0 still energy
         filters:
           - throttle: ${gate_throttle}
-    g1: 
+    g1:
       move_energy:
         name: g1 move energy
         filters:
@@ -185,7 +185,7 @@ sensor:
         name: g1 still energy
         filters:
           - throttle: ${gate_throttle}
-    g2: 
+    g2:
       move_energy:
         name: g2 move energy
         filters:
@@ -194,7 +194,7 @@ sensor:
         name: g2 still energy
         filters:
           - throttle: ${gate_throttle}
-    g3: 
+    g3:
       move_energy:
         name: g3 move energy
         filters:
@@ -203,7 +203,7 @@ sensor:
         name: g3 still energy
         filters:
           - throttle: ${gate_throttle}
-    g4: 
+    g4:
       move_energy:
         name: g4 move energy
         filters:
@@ -212,7 +212,7 @@ sensor:
         name: g4 still energy
         filters:
           - throttle: ${gate_throttle}
-    g5: 
+    g5:
       move_energy:
         name: g5 move energy
         filters:
@@ -221,7 +221,7 @@ sensor:
         name: g5 still energy
         filters:
           - throttle: ${gate_throttle}
-    g6: 
+    g6:
       move_energy:
         name: g6 move energy
         filters:
@@ -230,7 +230,7 @@ sensor:
         name: g6 still energy
         filters:
           - throttle: ${gate_throttle}
-    g7: 
+    g7:
       move_energy:
         name: g7 move energy
         filters:
@@ -239,7 +239,7 @@ sensor:
         name: g7 still energy
         filters:
           - throttle: ${gate_throttle}
-    g8: 
+    g8:
       move_energy:
         name: g8 move energy
         filters:

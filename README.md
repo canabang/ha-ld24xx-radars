@@ -13,8 +13,17 @@ Les radars mmWave sont aujourd'hui la référence pour la détection de présenc
 
 ## 🚀 Architecture du Dépôt
 Le dépôt se compose de deux parties majeures :
-* 📂 **`/ld2410`** : Configuration pour les antennes LD2410. Dashboards incluant les seuils d'énergie temporels par "Gate".
-* 📂 **`/ld2450`** : Configuration en MÈTRES (réécrite pour un contrôle naturel) avec représentation cartographique des zones.
+
+### 📂 `/ld2410` (Détection par Gates)
+- Firmware optimisé avec gestion fine du bruit (`throttle` et `delta` sur les vagues d'énergie).
+- Dashboard Plotly affichant en temps réel les énergies cinétiques "Move" et "Still" face aux seuils.
+- Calcul visuel interactif : Les sliders de portes basculent automatiquement en mètres selon la "Résolution de distance" (ex: G1 affiche directement "0.75m").
+
+### 📂 `/ld2450` (Cartographie 2D)
+- Firmware réécrit pour exposer l'ensemble des réglages et capteurs **en mètres**.
+- Visualisation temps réel des cibles (jusqu'à 3) sur plan 2D.
+- Gestion logicielle de **l'angle d'inclinaison** du capteur.
+- Option **"Target Must Leave Zone"** par zone pour verrouiller la présence et supprimer le flickering d'éclairage.
 
 ## 🙏 Crédits
 * **LD2450** : Basé sur le projet [53l3cu5/ESP32_LD2450](https://github.com/53l3cu5/ESP32_LD2450) (⚠️ **plus maintenu**). Outil de génération : [53l3cu5.github.io](https://53l3cu5.github.io).

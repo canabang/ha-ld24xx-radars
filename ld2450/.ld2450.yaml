@@ -109,7 +109,7 @@ number:
     name: ${entity_name} Any Presence Timeout
     id: any_presence_timeout
     min_value: 0
-    max_value: 600
+    max_value: 120
     mode: box
     entity_category: config
     unit_of_measurement: s
@@ -124,7 +124,7 @@ number:
     name: ${entity_name} Zone1 Timeout
     id: zone1_timeout
     min_value: 0
-    max_value: 600
+    max_value: 120
     mode: box
     entity_category: config
     unit_of_measurement: s
@@ -136,7 +136,7 @@ number:
     name: ${entity_name} Zone2 Timeout
     id: zone2_timeout
     min_value: 0
-    max_value: 600
+    max_value: 120
     mode: box
     entity_category: config
     unit_of_measurement: s
@@ -148,7 +148,19 @@ number:
     name: ${entity_name} Zone3 Timeout
     id: zone3_timeout
     min_value: 0
-    max_value: 600
+    max_value: 120
+    mode: box
+    entity_category: config
+    unit_of_measurement: s
+    step: 1
+    optimistic: True
+    initial_value: 0
+    restore_value: True
+  - platform: template
+    name: ${entity_name} Zout1 Timeout
+    id: zone_ex1_timeout
+    min_value: 0
+    max_value: 120
     mode: box
     entity_category: config
     unit_of_measurement: s
@@ -405,6 +417,9 @@ binary_sensor:
     id: zone_ex1_target_exist
     icon: mdi:account-multiple-remove
     device_class: occupancy
+    filters:
+      - delayed_off: !lambda |-
+          return id(zone_ex1_timeout).state * 1000.0;
   - platform: template
     id: zone_ex2_target_exist
     internal: true

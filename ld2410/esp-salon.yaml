@@ -1,0 +1,48 @@
+substitutions:
+  name: "esp-salon"
+  idname: "esp_salon" # "_" est le seul caractère autoriser
+  board: esp32dev
+  type: esp-idf # arduino
+  loglevel: DEBUG #VERY_VERBOSE
+  static_ip: 192.168.1.14
+  ibeacon_uuid: "730BD341-36FB-428A-9EE2-4A539934C7F1"
+  ibeacon_name: "tricordeur"
+  min_rssi: "-71dB"
+  sda: "21" # 21
+  scl: "22" # 22
+  bmeaddress: "0x76" # 0x77
+  offset: "0.0"
+  piece: salon
+  uart_tx: "17"
+  uart_rx: "16"
+  gpiopin: "04"
+  # ==========================================
+  #   RÉGLAGES DE PERFORMANCE & RAFRAÎCHISSEMENT
+  # ==========================================
+  # ---> MODE RÉGLAGE (Recommandé pour configurer via le Dashboard Plotly)
+  # gate_throttle: 1s
+  # energy_throttle: 1s
+  #
+  # ---> MODE PRODUCTION (Valeurs actuelles - Pour ne pas saturer Home Assistant)
+  # gate_throttle: 60s
+  # energy_throttle: 15s
+  # ==========================================
+
+  gate_throttle: 60s
+  energy_throttle: 15s
+  distance_delta: "10.0"
+
+packages:
+  base: !include .base.yaml
+  bluetooth: !include .bluetooth.yaml
+  i2c: !include .i2c.yaml
+  bme280: !include .bme280.yaml
+  bh1750: !include .bh1750.yaml
+  ld2410: !include .ld2410.yaml
+#  voltage: !include .voltage.yaml
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "VOTRE_CLE_API_ICI" # <-- Générée par ESPHome
+
