@@ -39,6 +39,7 @@
 - [x] Produire l'audit Sentinel de Phase 3.
 
 ## 📄 Phase 4 : Documentation & Clôture
-- [/] Mettre à jour le `README.md` principal avec assets locaux.
-- [ ] Générer le rapport d'audit final `AUDIT_SENTINEL_FINAL_v1.0.0.md`.
-- [ ] JALON : Signalement pour Commit Manuel (Commandant).
+- [x] Mettre à jour le `README.md` principal avec assets locaux.
+- [x] Générer le rapport d'audit final `AUDIT_SENTINEL_FINAL_v1.0.0.md`.
+- [/] JALON : Signalement pour Commit Manuel (Commandant).
+
