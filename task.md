@@ -41,5 +41,6 @@
 ## 📄 Phase 4 : Documentation & Clôture
 - [x] Mettre à jour le `README.md` principal avec assets locaux.
 - [x] Générer le rapport d'audit final `AUDIT_SENTINEL_FINAL_v1.0.0.md`.
-- [/] JALON : Signalement pour Commit Manuel (Commandant).
+- [x] JALON : Signalement pour Commit Manuel (Commandant).
+
 
